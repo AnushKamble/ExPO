@@ -1,0 +1,70 @@
+{
+  "study": "cuped_variance_reduction",
+  "preset": "smoke",
+  "seed": 42,
+  "n_replications_per_rho": 100,
+  "n_users_per_rep": 1000,
+  "delta_true": 1.0,
+  "grid_results": [
+    {
+      "target_rho": 0.0,
+      "theoretical_variance_reduction": 0.0,
+      "empirical_variance_reduction": 0.0010133797600075933,
+      "ci_width_reduction": 0.0004978034330611614,
+      "coverage_rate": 0.95,
+      "coverage_wilson_ci": [
+        0.8882495307680808,
+        0.9784563208456319
+      ],
+      "mean_ate_bias": -0.019855700016837688
+    },
+    {
+      "target_rho": 0.2,
+      "theoretical_variance_reduction": 0.04000000000000001,
+      "empirical_variance_reduction": 0.040787189052751915,
+      "ci_width_reduction": 0.02071618728645963,
+      "coverage_rate": 0.96,
+      "coverage_wilson_ci": [
+        0.9016292856411208,
+        0.9843366960084523
+      ],
+      "mean_ate_bias": -0.009184187944107051
+    },
+    {
+      "target_rho": 0.5,
+      "theoretical_variance_reduction": 0.25,
+      "empirical_variance_reduction": 0.24939779809824825,
+      "ci_width_reduction": 0.13403220507996227,
+      "coverage_rate": 0.9,
+      "coverage_wilson_ci": [
+        0.8256343384950865,
+        0.9447708629393249
+      ],
+      "mean_ate_bias": 0.033219432985324815
+    },
+    {
+      "target_rho": 0.7,
+      "theoretical_variance_reduction": 0.48999999999999994,
+      "empirical_variance_reduction": 0.48946768004899643,
+      "ci_width_reduction": 0.2863169388705681,
+      "coverage_rate": 0.97,
+      "coverage_wilson_ci": [
+        0.9154806357094724,
+        0.9897454759759611
+      ],
+      "mean_ate_bias": 0.0724530556033708
+    },
+    {
+      "target_rho": 0.9,
+      "theoretical_variance_reduction": 0.81,
+      "empirical_variance_reduction": 0.8087098272300032,
+      "ci_width_reduction": 0.5650317842730518,
+      "coverage_rate": 0.95,
+      "coverage_wilson_ci": [
+        0.8882495307680808,
+        0.9784563208456319
+      ],
+      "mean_ate_bias": 0.016829182481228885
+    }
+  ]
+}

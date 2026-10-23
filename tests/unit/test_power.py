@@ -56,3 +56,15 @@ def test_power_invalid_inputs_rejected():
         compute_continuous_sample_size(baseline_variance=10.0, mde_absolute=1.0, alpha=1.5)
     with pytest.raises(ValueError, match="baseline_rate must be in"):
         compute_binary_sample_size(baseline_rate=1.5, mde_absolute=0.02)
+    with pytest.raises(ValueError, match="allocation_ratio must be strictly positive"):
+        compute_binary_sample_size(baseline_rate=0.10, mde_absolute=0.02, allocation_ratio=0.0)
+    with pytest.raises(ValueError, match="allocation_ratio must be strictly positive"):
+        compute_binary_sample_size(baseline_rate=0.10, mde_absolute=0.02, allocation_ratio=-0.5)
+
+
+def test_binary_sample_size_unequal_allocation():
+    res_eq = compute_binary_sample_size(baseline_rate=0.10, mde_absolute=0.02, allocation_ratio=1.0)
+    res_uneq = compute_binary_sample_size(baseline_rate=0.10, mde_absolute=0.02, allocation_ratio=2.0)
+    assert res_uneq.treatment_sample_size > res_uneq.control_sample_size
+    assert res_uneq.treatment_sample_size == pytest.approx(res_uneq.control_sample_size * 2, abs=2)
+

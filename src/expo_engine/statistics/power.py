@@ -51,6 +51,7 @@ def compute_continuous_sample_size(
     if allocation_ratio <= 0:
         raise ValueError(f"allocation_ratio must be strictly positive, got {allocation_ratio}")
 
+
     z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
     z_beta = stats.norm.ppf(power)
 
@@ -128,6 +129,8 @@ def compute_binary_sample_size(
         raise ValueError(f"alpha must be in (0, 1), got {alpha}")
     if not (0.0 < power < 1.0):
         raise ValueError(f"power must be in (0, 1), got {power}")
+    if allocation_ratio <= 0:
+        raise ValueError(f"allocation_ratio must be strictly positive, got {allocation_ratio}")
 
     z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
     z_beta = stats.norm.ppf(power)

@@ -106,6 +106,11 @@ def evaluate_sequential_monitoring(
             warnings=["Sequential monitoring blocked due to ineligibility."],
         )
 
+    if look_frequency <= 0:
+        raise ValueError(f"look_frequency must be strictly positive, got {look_frequency}")
+    if not (0.0 < alpha < 1.0):
+        raise ValueError(f"alpha must be in (0, 1), got {alpha}")
+
     # Precondition check 2: Predeclared variance
     if known_variance <= 0:
         raise ValueError(

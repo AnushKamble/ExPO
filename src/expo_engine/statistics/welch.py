@@ -53,6 +53,9 @@ def compute_welch_ttest(
     Performs Welch's unequal-variance two-sample t-test.
     Returns a validated WelchResult.
     """
+    if not (0.0 < alpha < 1.0):
+        raise ValueError(f"alpha must be in (0, 1), got {alpha}")
+
     y_c = np.asarray(control_vals, dtype=float)
     y_t = np.asarray(treatment_vals, dtype=float)
 

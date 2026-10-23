@@ -58,3 +58,13 @@ def test_welch_unequal_variance_and_sizes():
     assert res.p_value == pytest.approx(scipy_res.pvalue, rel=1e-5)
     assert res.degrees_of_freedom == pytest.approx(scipy_res.df, rel=1e-5)
     assert res.ci_lower < res.absolute_effect < res.ci_upper
+
+
+def test_welch_invalid_alpha_raises():
+    control = np.array([10.0, 12.0, 11.0])
+    treatment = np.array([15.0, 16.0, 14.0])
+    with pytest.raises(ValueError, match="alpha must be in"):
+        compute_welch_ttest(control, treatment, alpha=0.0)
+    with pytest.raises(ValueError, match="alpha must be in"):
+        compute_welch_ttest(control, treatment, alpha=1.0)
+

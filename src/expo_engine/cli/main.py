@@ -186,6 +186,13 @@ def analyze(
     out_path = Path(out)
     out_path.mkdir(parents=True, exist_ok=True)
 
+    if not p_data.exists():
+        typer.secho(f"Input file not found: {p_data}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+    if not p_conf.exists():
+        typer.secho(f"Config file not found: {p_conf}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
     df = load_dataset(p_data)
     with open(p_conf, "r", encoding="utf-8") as f:
         conf_dict = yaml.safe_load(f)
@@ -312,6 +319,39 @@ def sim_ratio(
     with open(p, "w", encoding="utf-8") as f:
         json.dump(res, f, indent=2)
     typer.secho(f"Ratio Simulation completed. Coverage: {res['empirical_coverage']:.2%}. Saved to {p}", fg=typer.colors.GREEN)
+
+
+@simulate_app.command("aa")
+def sim_aa(
+    preset: str = typer.Option("smoke", help="'smoke', 'medium', or 'full'"),
+    seed: int = typer.Option(42, help="Seed"),
+    out: str = typer.Option("results/simulations/aa.json", help="Output path"),
+):
+    """Study C: A/A Null Calibration and P-Value Uniformity."""
+    typer.echo(f"Running A/A Simulation (preset={preset}, seed={seed})...")
+    res = run_aa_simulation(preset=preset, seed=seed)
+    p = Path(out)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(res, f, indent=2)
+    typer.secho(f"A/A Simulation completed. Empirical FPR: {res['observed_type_1_error']:.2%}, KS p-value: {res['ks_uniformity_p_value']:.4f}. Saved to {p}", fg=typer.colors.GREEN)
+
+
+@simulate_app.command("srm")
+def sim_srm(
+    preset: str = typer.Option("smoke", help="'smoke', 'medium', or 'full'"),
+    seed: int = typer.Option(42, help="Seed"),
+    out: str = typer.Option("results/simulations/srm.json", help="Output path"),
+):
+    """Study E: SRM Detection Power vs Sample Size and Traffic Imbalance."""
+    typer.echo(f"Running SRM Simulation (preset={preset}, seed={seed})...")
+    res = run_srm_simulation(preset=preset, seed=seed)
+    p = Path(out)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(res, f, indent=2)
+    typer.secho(f"SRM Simulation completed. Scenarios evaluated: {len(res['matrix_results'])}. Saved to {p}", fg=typer.colors.GREEN)
+
 
 
 @app.command("report")

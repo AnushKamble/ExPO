@@ -72,14 +72,14 @@ def aggregate_events_to_users(
     if post_event_names:
         placeholders = ", ".join(["?"] * len(post_event_names))
         post_expr = f"""
-            SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name IN ({placeholders}) 
-                     THEN {val_expr} ELSE 0.0 END) AS metric_value
+            COALESCE(SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name IN ({placeholders}) 
+                     THEN {val_expr} ELSE 0.0 END), 0.0) AS metric_value
         """
         metric_selects.append((post_expr, list(post_event_names)))
     else:
         post_expr = f"""
-            SUM(CASE WHEN e."{et_col}" >= a."{at_col}" 
-                     THEN {val_expr} ELSE 0.0 END) AS metric_value
+            COALESCE(SUM(CASE WHEN e."{et_col}" >= a."{at_col}" 
+                     THEN {val_expr} ELSE 0.0 END), 0.0) AS metric_value
         """
         metric_selects.append((post_expr, []))
 
@@ -87,27 +87,27 @@ def aggregate_events_to_users(
     if pre_event_names:
         placeholders_pre = ", ".join(["?"] * len(pre_event_names))
         pre_expr = f"""
-            SUM(CASE WHEN e."{et_col}" < a."{at_col}" AND e.event_name IN ({placeholders_pre}) 
-                     THEN {val_expr} ELSE 0.0 END) AS pre_metric
+            COALESCE(SUM(CASE WHEN e."{et_col}" < a."{at_col}" AND e.event_name IN ({placeholders_pre}) 
+                     THEN {val_expr} ELSE 0.0 END), 0.0) AS pre_metric
         """
         metric_selects.append((pre_expr, list(pre_event_names)))
     else:
         pre_expr = f"""
-            SUM(CASE WHEN e."{et_col}" < a."{at_col}" 
-                     THEN {val_expr} ELSE 0.0 END) AS pre_metric
+            COALESCE(SUM(CASE WHEN e."{et_col}" < a."{at_col}" 
+                     THEN {val_expr} ELSE 0.0 END), 0.0) AS pre_metric
         """
         metric_selects.append((pre_expr, []))
 
     # Ratio metric numerator / denominator if requested
     if numerator_event and denominator_event:
         num_expr = f"""
-            SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name = ? 
-                     THEN {val_expr} ELSE 0.0 END) AS numerator
+            COALESCE(SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name = ? 
+                     THEN {val_expr} ELSE 0.0 END), 0.0) AS numerator
         """
         metric_selects.append((num_expr, [numerator_event]))
         denom_expr = f"""
-            SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name = ? 
-                     THEN 1.0 ELSE 0.0 END) AS denominator
+            COALESCE(SUM(CASE WHEN e."{et_col}" >= a."{at_col}" AND e.event_name = ? 
+                     THEN 1.0 ELSE 0.0 END), 0.0) AS denominator
         """
         metric_selects.append((denom_expr, [denominator_event]))
 

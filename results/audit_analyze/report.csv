@@ -1,0 +1,5 @@
+section,metric,method,estimate,se,ci_lower,ci_upper,p_value,is_significant
+primary_unadjusted,revenue,Welch's Unequal-Variance Two-Sample t-Test,1.9263091514941095,0.3650399614787381,1.2105547223184285,2.6420635806697907,1.4069533960103797e-07,True
+primary_cuped_adjusted,metric_value,CUPED / ANCOVA Robust Regression,1.9236299003892132,0.2640115373891006,1.4059614818140977,2.4412983189643285,3.189178185424717e-13,True
+secondary_bh_adjusted,page_views,Benjamini-Hochberg FDR,,,,,1.4069533960103797e-07,True
+sequential_monitoring,revenue,Gaussian Normal-Mixture Evidence Process (mSPRT),1.9186460298390169,,0.9473487423374523,3.004958591371919,8.634896863335716e-06,True

@@ -150,20 +150,88 @@ class ExperimentAnalysisService:
         # 5. Sequential Monitoring (if enabled and eligible)
         seq_res: Optional[SequentialResult] = None
         if self.config.sequential and self.config.sequential.enabled:
-            primary_col = primary_metric.column if primary_metric else None
-            if primary_metric and primary_col in df.columns:
-                c_seq = df.loc[df[self.config.variant_col] == self.config.control_variant, primary_col].values
-                t_seq = df.loc[df[self.config.variant_col] == self.config.treatment_variant, primary_col].values
-                seq_res = evaluate_sequential_monitoring(
-                    treatment_stream=t_seq,
-                    control_stream=c_seq,
-                    known_variance=self.config.sequential.known_variance,
+            if not primary_metric:
+                seq_res = SequentialResult(
+                    metric_name="unknown",
+                    eligible=False,
+                    ineligibility_reason="No primary metric declared for sequential monitoring.",
+                    known_difference_variance=self.config.sequential.known_variance,
                     mixture_variance=self.config.sequential.mixture_variance,
                     alpha=self.config.sequential.alpha,
+                    stopping_threshold=1.0 / self.config.sequential.alpha,
+                    total_looks_analyzed=0,
+                    total_pairs=0,
+                    stopped_early=False,
+                    final_mean_diff=0.0,
+                    final_evidence=1.0,
+                    final_running_max_evidence=1.0,
+                    final_anytime_p_value=1.0,
+                    final_cs_lower=0.0,
+                    final_cs_upper=0.0,
+                    warnings=["No primary metric declared for sequential monitoring."],
+                )
+            elif primary_metric.kind == MetricKind.RATIO_OF_SUMS:
+                seq_res = SequentialResult(
                     metric_name=primary_metric.name,
-                    metric_kind=primary_metric.kind.value,
+                    eligible=False,
+                    ineligibility_reason=(
+                        f"Primary metric '{primary_metric.name}' is a ratio_of_sums metric. "
+                        "Gaussian mixture sequential engine strictly requires independent Gaussian increments, "
+                        "which ratio metrics violate without a separately derived anytime-valid evidence process."
+                    ),
+                    known_difference_variance=self.config.sequential.known_variance,
+                    mixture_variance=self.config.sequential.mixture_variance,
+                    alpha=self.config.sequential.alpha,
+                    stopping_threshold=1.0 / self.config.sequential.alpha,
+                    total_looks_analyzed=0,
+                    total_pairs=0,
+                    stopped_early=False,
+                    final_mean_diff=0.0,
+                    final_evidence=1.0,
+                    final_running_max_evidence=1.0,
+                    final_anytime_p_value=1.0,
+                    final_cs_lower=0.0,
+                    final_cs_upper=0.0,
+                    warnings=[f"Sequential monitoring blocked: ratio metric '{primary_metric.name}' ineligible."],
                 )
                 warnings.extend(seq_res.warnings)
+                warnings.append(seq_res.ineligibility_reason)
+            else:
+                primary_col = primary_metric.column or primary_metric.name
+                if primary_col in df.columns:
+                    c_seq = df.loc[df[self.config.variant_col] == self.config.control_variant, primary_col].values
+                    t_seq = df.loc[df[self.config.variant_col] == self.config.treatment_variant, primary_col].values
+                    seq_res = evaluate_sequential_monitoring(
+                        treatment_stream=t_seq,
+                        control_stream=c_seq,
+                        known_variance=self.config.sequential.known_variance,
+                        mixture_variance=self.config.sequential.mixture_variance,
+                        alpha=self.config.sequential.alpha,
+                        metric_name=primary_metric.name,
+                        metric_kind=primary_metric.kind.value,
+                    )
+                    warnings.extend(seq_res.warnings)
+                else:
+                    seq_res = SequentialResult(
+                        metric_name=primary_metric.name,
+                        eligible=False,
+                        ineligibility_reason=f"Primary metric column '{primary_col}' not found in dataframe.",
+                        known_difference_variance=self.config.sequential.known_variance,
+                        mixture_variance=self.config.sequential.mixture_variance,
+                        alpha=self.config.sequential.alpha,
+                        stopping_threshold=1.0 / self.config.sequential.alpha,
+                        total_looks_analyzed=0,
+                        total_pairs=0,
+                        stopped_early=False,
+                        final_mean_diff=0.0,
+                        final_evidence=1.0,
+                        final_running_max_evidence=1.0,
+                        final_anytime_p_value=1.0,
+                        final_cs_lower=0.0,
+                        final_cs_upper=0.0,
+                        warnings=[f"Primary metric column '{primary_col}' not found."],
+                    )
+                    warnings.append(seq_res.ineligibility_reason)
 
         # Data quality status string
         dq_status = "SRM_ALERT" if srm_res.status == "SRM_DETECTED" else ("WARNINGS" if warnings else "CLEAN")

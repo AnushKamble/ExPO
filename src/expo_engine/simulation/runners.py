@@ -88,7 +88,26 @@ def run_peeking_simulation(
     max_log_ev = np.max(log_evidence_grid, axis=1)
     sequential_rejections = int(np.sum(max_log_ev >= threshold_log_ev))
 
-    # Compute metrics and Wilson intervals
+    # Compute metrics, stopping sample sizes, and first crossing distributions
+    # 1. Naive Peeking stopping sample size
+    has_naive_cross = np.any(all_nominal_p < alpha, axis=1)
+    # First crossing index where p < alpha, else final look
+    naive_cross_idx = np.where(has_naive_cross, np.argmax(all_nominal_p < alpha, axis=1), n_looks - 1)
+    naive_stopping_pairs = pairs_at_look[naive_cross_idx]
+    naive_mean_stopping = float(np.mean(naive_stopping_pairs))
+    naive_median_stopping = float(np.median(naive_stopping_pairs))
+    naive_crossing_dist = [int(np.sum((has_naive_cross) & (naive_cross_idx == l))) for l in range(n_looks)]
+
+    # 2. Sequential mSPRT stopping sample size
+    seq_cross_mask = (log_evidence_grid >= threshold_log_ev)
+    has_seq_cross = np.any(seq_cross_mask, axis=1)
+    seq_cross_idx = np.where(has_seq_cross, np.argmax(seq_cross_mask, axis=1), n_looks - 1)
+    seq_stopping_pairs = pairs_at_look[seq_cross_idx]
+    seq_mean_stopping = float(np.mean(seq_stopping_pairs))
+    seq_median_stopping = float(np.median(seq_stopping_pairs))
+    seq_crossing_dist = [int(np.sum((has_seq_cross) & (seq_cross_idx == l))) for l in range(n_looks)]
+
+    # Compute Wilson intervals
     fixed_rate, fixed_l, fixed_u = compute_wilson_score_interval(fixed_rejections, n_reps)
     naive_rate, naive_l, naive_u = compute_wilson_score_interval(naive_rejections, n_reps)
     seq_rate, seq_l, seq_u = compute_wilson_score_interval(sequential_rejections, n_reps)
@@ -108,6 +127,7 @@ def run_peeking_simulation(
             "wilson_ci_lower": fixed_l,
             "wilson_ci_upper": fixed_u,
             "mcse": compute_mcse(fixed_rate, n_reps),
+            "stopping_sample_size_pairs": int(pairs_at_look[-1]),
         },
         "naive_daily_peeking": {
             "rejections": naive_rejections,
@@ -115,6 +135,9 @@ def run_peeking_simulation(
             "wilson_ci_lower": naive_l,
             "wilson_ci_upper": naive_u,
             "mcse": compute_mcse(naive_rate, n_reps),
+            "mean_stopping_sample_size_pairs": naive_mean_stopping,
+            "median_stopping_sample_size_pairs": naive_median_stopping,
+            "first_crossing_distribution_by_look": naive_crossing_dist,
         },
         "gaussian_mixture_sequential": {
             "rejections": sequential_rejections,
@@ -122,6 +145,9 @@ def run_peeking_simulation(
             "wilson_ci_lower": seq_l,
             "wilson_ci_upper": seq_u,
             "mcse": compute_mcse(seq_rate, n_reps),
+            "mean_stopping_sample_size_pairs": seq_mean_stopping,
+            "median_stopping_sample_size_pairs": seq_median_stopping,
+            "first_crossing_distribution_by_look": seq_crossing_dist,
         },
     }
 
@@ -136,7 +162,14 @@ def run_cuped_simulation(
     """
     Study B: Evaluates CUPED variance reduction, bias, coverage, and CI shrinkage across a correlation grid.
     """
-    n_reps = 100 if preset == "smoke" else 1000
+    if preset == "smoke":
+        n_reps = 100
+    elif preset == "medium":
+        n_reps = 500
+    elif preset == "full":
+        n_reps = 2000
+    else:
+        n_reps = 1000
     rng = np.random.default_rng(seed)
     results_by_rho = []
 
@@ -230,7 +263,14 @@ def run_aa_simulation(
     """
     Study C: A/A Null Calibration and Uniformity Assessment.
     """
-    n_reps = 200 if preset == "smoke" else 2000
+    if preset == "smoke":
+        n_reps = 200
+    elif preset == "medium":
+        n_reps = 1000
+    elif preset == "full":
+        n_reps = 5000
+    else:
+        n_reps = 2000
     rng = np.random.default_rng(seed)
 
     # Generate matrix of A/A user outcomes under exact null
@@ -276,7 +316,14 @@ def run_ratio_simulation(
     """
     Study D: Ratio Delta Method Coverage Evaluation.
     """
-    n_reps = 100 if preset == "smoke" else 1000
+    if preset == "smoke":
+        n_reps = 100
+    elif preset == "medium":
+        n_reps = 500
+    elif preset == "full":
+        n_reps = 2000
+    else:
+        n_reps = 1000
     rng = np.random.default_rng(seed)
     
     true_ratio_diff = 0.02
@@ -335,7 +382,14 @@ def run_srm_simulation(
     """
     Study E: SRM Detection Power vs Sample Size and Traffic Imbalance.
     """
-    n_reps = 100 if preset == "smoke" else 1000
+    if preset == "smoke":
+        n_reps = 100
+    elif preset == "medium":
+        n_reps = 500
+    elif preset == "full":
+        n_reps = 2000
+    else:
+        n_reps = 1000
     rng = np.random.default_rng(seed)
     matrix_results = []
 

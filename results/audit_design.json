@@ -1,0 +1,17 @@
+{
+  "metric_kind": "continuous_mean",
+  "target_power": 0.8,
+  "alpha": 0.05,
+  "mde_absolute": 1.5,
+  "mde_relative": 0.03,
+  "control_sample_size": 698,
+  "treatment_sample_size": 698,
+  "total_sample_size": 1396,
+  "allocation_ratio": 1.0,
+  "cuped_projected_total": 894,
+  "cuped_correlation_assumed": 0.6,
+  "cuped_note": "Projected sample size assuming pre-experiment correlation rho=0.60 (theoretical variance factor 1 - rho^2 = 0.64). This is a planning projection, not an achieved guarantee.",
+  "daily_sample_rate": 500.0,
+  "estimated_duration_days": 3,
+  "method_notes": "Continuous two-sample normal approximation (alpha=0.05, power=0.8, allocation ratio=1.0). Assumes independent observations and equal variance."
+}

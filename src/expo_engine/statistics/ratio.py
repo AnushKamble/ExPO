@@ -103,6 +103,9 @@ def compute_ratio_metric(
     """
     Computes treatment effect for ratio-of-sums metric via Delta Method.
     """
+    if not (0.0 < alpha < 1.0):
+        raise ValueError(f"alpha must be in (0, 1), got {alpha}")
+
     warnings: List[str] = []
 
     # Filter non-finite rows
@@ -152,7 +155,11 @@ def compute_ratio_metric(
         ci_lower = float(delta_r - z_crit * se_diff)
         ci_upper = float(delta_r + z_crit * se_diff)
 
-    relative_lift = (delta_r / r_c) if abs(r_c) > 1e-7 else None
+    if abs(r_c) <= 1e-7:
+        warnings.append("Control ratio is near zero (|R_C| <= 1e-7). Relative lift is mathematically unstable.")
+        relative_lift = None
+    else:
+        relative_lift = delta_r / r_c
 
     # Bootstrap sensitivity if requested
     boot_ci_lower = None

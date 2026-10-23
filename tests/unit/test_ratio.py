@@ -74,3 +74,27 @@ def test_ratio_small_denominator_warning():
     })
     res = compute_ratio_metric(df, numerator_col="num", denominator_col="denom")
     assert any("Average denominator is very small" in w for w in res.warnings)
+
+
+def test_ratio_invalid_alpha_raises():
+    df = pd.DataFrame({
+        "variant": ["control", "treatment"],
+        "num": [10.0, 20.0],
+        "denom": [5.0, 10.0],
+    })
+    with pytest.raises(ValueError, match="alpha must be in"):
+        compute_ratio_metric(df, numerator_col="num", denominator_col="denom", alpha=0.0)
+    with pytest.raises(ValueError, match="alpha must be in"):
+        compute_ratio_metric(df, numerator_col="num", denominator_col="denom", alpha=1.2)
+
+
+def test_ratio_near_zero_control_warning():
+    df = pd.DataFrame({
+        "variant": ["control", "control", "treatment", "treatment"],
+        "num": [0.0, 0.0, 10.0, 10.0],
+        "denom": [1.0, 1.0, 1.0, 1.0],
+    })
+    res = compute_ratio_metric(df, numerator_col="num", denominator_col="denom")
+    assert res.relative_lift is None
+    assert any("Control ratio is near zero" in w for w in res.warnings)
+

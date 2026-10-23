@@ -93,3 +93,41 @@ def test_sequential_ineligibility_blocks():
     )
     assert res.eligible is False
     assert "violates model assumptions" in res.ineligibility_reason
+
+
+def test_sequential_parameter_validation():
+    with pytest.raises(ValueError, match="look_frequency must be strictly positive"):
+        evaluate_sequential_monitoring(
+            treatment_stream=[1.0, 2.0],
+            control_stream=[1.0, 2.0],
+            known_variance=2.0,
+            look_frequency=0,
+        )
+    with pytest.raises(ValueError, match="alpha must be in"):
+        evaluate_sequential_monitoring(
+            treatment_stream=[1.0, 2.0],
+            control_stream=[1.0, 2.0],
+            known_variance=2.0,
+            alpha=1.5,
+        )
+
+
+def test_sequential_empty_intersection_recovery():
+    # Construct an artificial series of look estimates where confidence intervals jump and disjoint
+    # evaluate_sequential_monitoring running intersection must recover gracefully and keep cs_lower <= cs_upper
+    rng = np.random.default_rng(999)
+    # 60 alternating extreme observations designed to stress running intersection
+    control = np.array([0.0, 0.0, 10.0, 10.0] * 10)
+    treatment = np.array([10.0, 10.0, 0.0, 0.0] * 10)
+
+    res = evaluate_sequential_monitoring(
+        treatment_stream=treatment,
+        control_stream=control,
+        known_variance=50.0,
+        look_frequency=4,
+    )
+    assert res.eligible is True
+    for look in res.looks_history:
+        assert look.cs_lower <= look.cs_upper
+    assert res.final_cs_lower <= res.final_cs_upper
+

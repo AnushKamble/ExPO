@@ -93,3 +93,43 @@ def test_full_pipeline_and_report_generation(tmp_path: Path):
     assert csv_path.exists() and csv_path.stat().st_size > 0
     assert md_path.exists() and md_path.stat().st_size > 0
     assert html_path.exists() and html_path.stat().st_size > 0
+
+
+def test_sequential_ineligibility_reported_for_ratio_primary_metric():
+    df, _ = generate_effect_normal(n_users=500, seed=42)
+    df["clicks"] = 5
+    df["impressions"] = 100
+
+    config = ExperimentConfig(
+        experiment_id="e2e_ratio_seq_exp",
+        user_id_col="user_id",
+        variant_col="variant",
+        control_variant="control",
+        treatment_variant="treatment",
+        metrics=[
+            MetricSpec(
+                name="ctr",
+                label="Click Through Rate",
+                kind=MetricKind.RATIO_OF_SUMS,
+                role=MetricRole.PRIMARY,
+                numerator_column="clicks",
+                denominator_column="impressions",
+            )
+        ],
+        sequential=SequentialConfig(
+            enabled=True,
+            known_variance=1.0,
+            mixture_variance=1.0,
+            alpha=0.05,
+        ),
+    )
+
+    service = ExperimentAnalysisService(config)
+    manifest = service.run_full_analysis(df, run_id="run_ratio_seq_test")
+
+    assert manifest.sequential_result is not None
+    seq_res = manifest.sequential_result
+    assert seq_res["eligible"] is False
+    assert "ratio_of_sums" in seq_res["ineligibility_reason"]
+    assert any("ineligible" in w.lower() for w in manifest.warnings)
+

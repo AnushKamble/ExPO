@@ -1,0 +1,9 @@
+metric_kind: "continuous_mean"
+baseline_variance: 100.0
+mde_absolute: 1.5
+baseline_mean: 50.0
+alpha: 0.05
+target_power: 0.80
+allocation_ratio: 1.0
+cuped_rho: 0.60
+daily_sample_rate: 500.0

@@ -1,0 +1,9 @@
+preset: "smoke"
+seed: 42
+studies:
+  - peeking
+  - cuped
+  - aa
+  - ratio
+  - srm
+output_dir: "results/simulations"

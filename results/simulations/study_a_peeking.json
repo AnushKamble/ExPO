@@ -1,0 +1,31 @@
+{
+  "study": "peeking_inflation",
+  "preset": "medium",
+  "seed": 42,
+  "n_replications": 1000,
+  "n_looks": 30,
+  "total_pairs_max": 1500,
+  "delta_true": 0.0,
+  "alpha": 0.05,
+  "fixed_horizon": {
+    "rejections": 52,
+    "rejection_rate": 0.052,
+    "wilson_ci_lower": 0.03987303628377742,
+    "wilson_ci_upper": 0.06755573931927998,
+    "mcse": 0.007021111023192838
+  },
+  "naive_daily_peeking": {
+    "rejections": 286,
+    "rejection_rate": 0.286,
+    "wilson_ci_lower": 0.25885269614280204,
+    "wilson_ci_upper": 0.3147851564890155,
+    "mcse": 0.014289996501049255
+  },
+  "gaussian_mixture_sequential": {
+    "rejections": 6,
+    "rejection_rate": 0.006,
+    "wilson_ci_lower": 0.0027526691418763745,
+    "wilson_ci_upper": 0.01302816824185209,
+    "mcse": 0.002442130217658346
+  }
+}

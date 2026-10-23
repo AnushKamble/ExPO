@@ -1,0 +1,2 @@
+[console_scripts]
+expo = expo_engine.cli.main:app

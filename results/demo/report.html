@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ExPO Report - demo_experiment_001</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 { color: #111827; }
+        h1 { border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            text-align: left;
+        }
+        th { background-color: #f3f4f6; }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        .badge-clean { background-color: #d1fae5; color: #065f46; }
+        .badge-alert { background-color: #fee2e2; color: #991b1b; }
+        .warning-box {
+            background-color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ExPO Experimentation Outcomes Report</h1>
+        <p><strong>Experiment ID:</strong> demo_experiment_001 | <strong>Run ID:</strong> canonical_demo_run</p>
+        <p><strong>Timestamp:</strong> 2026-10-23T17:04:16.437796+00:00 | <strong>Engine:</strong> ExPO v0.1.0</p>
+        <p><strong>Data Quality Status:</strong> <span class="badge badge-clean">WARNINGS</span></p>
+        <hr/>
+        <pre># ExPO Experiment Analysis Report: `demo_experiment_001`
+- **Run ID:** `canonical_demo_run`
+- **Timestamp (UTC):** `2026-10-23T17:04:16.437796+00:00`
+- **Engine Version:** `0.1.0`
+- **Data Quality Status:** **WARNINGS**
+
+---
+
+## 1. Data Integrity & Sample Ratio Mismatch (SRM)
+- **Status:** `PASS`
+- **Goodness-of-Fit p-value:** `2.2821e-01` (Threshold: `0.001`)
+- **Method:** `chi_square`
+- **Observed Counts:** {'control': 1467, 'treatment': 1533}
+- **Expected Counts:** {'control': 1500.0, 'treatment': 1500.0}
+- **Audit Message:** No Sample Ratio Mismatch detected (assignment level, p=0.2282 >= 0.001). Observed traffic matches planned allocation within expected random variation.
+
+---
+
+## 2. Primary Metric Inference
+### Metric: `revenue` (Unadjusted Baseline)
+- **Method:** Welch's Unequal-Variance Two-Sample t-Test
+- **Treatment Effect Estimate:** `1.9263` (Relative Lift: `3.86%`)
+- **Standard Error:** `0.3650`
+- **95% Confidence Interval:** `[1.2106, 2.6421]`
+- **p-value:** `1.4070e-07`
+- **Statistically Significant (alpha=0.05):** `True`
+
+### CUPED & ANCOVA Covariate Adjustment (`pre_metric`)
+- **Adjusted Treatment Effect:** `1.9236`
+- **Robust Standard Error (HC1):** `0.2640` (vs Raw SE `0.3650`)
+- **Adjusted 95% CI:** `[1.4060, 2.4413]`
+- **Adjusted p-value:** `3.1892e-13`
+- **Covariate Correlation (rho):** `0.6989`
+- **Theoretical Variance Reduction (1 - rho^2):** `48.84%`
+- **Empirical Variance Reduction:** `48.84%`
+- **Complete Cases Used:** `2913` (Missing pre-covariate: `87`)
+
+---
+
+## 3. Secondary & Guardrail Metrics (Benjamini-Hochberg FDR)
+- **Correction Method:** Benjamini-Hochberg (BH) Step-Up Procedure
+- **Declared Target FDR (q):** `0.05`
+- **Total Tests:** `1` | **Rejections:** `1`
+
+| Metric | Raw p-value | BH Adjusted p-value | Rejected (FDR Controlled) |
+|---|---|---|---|
+| `page_views` | `0.0000` | `0.0000` | `YES` |
+
+---
+
+## 4. Sequential Monitoring (Gaussian Mixture e-Process)
+- **Model Eligibility:** `True`
+- **Frozen Pilot Variance (sigma_D^2):** `200.0`
+- **Predeclared Mixture Variance (tau^2):** `1.0`
+- **Total Balanced Pairs Monitored:** `1467` across `147` looks
+- **Stopped Early:** `YES (Look 75)`
+- **Final Anytime-Valid p-value:** `8.6349e-06`
+- **Final Time-Uniform Confidence Sequence:** `[0.9473, 3.0050]`
+
+---
+
+## 5. Audit Warnings & Caveats
+- > [!WARNING] Pre-covariate 'pre_metric' is missing for 87 of 3000 rows (2.9%). Policy 'complete_case' applied: adjusted estimate computed on complete cases only; unadjusted retains all valid outcomes.
+- > [!WARNING] Accrual streams unbalanced (Treatment=1533, Control=1467). Sequential evaluation truncated to 1467 balanced observation pairs.</pre>
+    </div>
+</body>
+</html>

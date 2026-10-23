@@ -1,0 +1,33 @@
+experiment_id: "demo_experiment_001"
+user_id_col: "user_id"
+variant_col: "variant"
+control_variant: "control"
+treatment_variant: "treatment"
+planned_ratio:
+  control: 0.5
+  treatment: 0.5
+alpha: 0.05
+target_power: 0.80
+srm_threshold: 0.001
+missing_covariate_policy: "complete_case"
+metrics:
+  - name: "revenue"
+    label: "Average Revenue Per User"
+    kind: "continuous_mean"
+    role: "primary"
+    column: "metric_value"
+    pre_covariate: "pre_metric"
+    direction: "increase"
+    unit: "$"
+  - name: "page_views"
+    label: "Page Views Per User"
+    kind: "continuous_mean"
+    role: "secondary"
+    column: "page_views"
+    direction: "increase"
+    unit: "views"
+sequential:
+  enabled: true
+  known_variance: 200.0
+  mixture_variance: 1.0
+  alpha: 0.05

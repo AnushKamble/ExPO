@@ -93,7 +93,7 @@ with col_opt2:
     if metric_kind == "Continuous Metric":
         mde_candidates = [mde_abs * 0.75, mde_abs, mde_abs * 1.25]
         sample_sizes = np.linspace(max(100, res.total_sample_size // 4), res.total_sample_size * 2, 40)
-        
+
         fig = go.Figure()
         for cand_mde in mde_candidates:
             powers = []

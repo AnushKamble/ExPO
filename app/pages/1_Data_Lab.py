@@ -97,13 +97,13 @@ if df is not None:
     # Column Mapping Section
     st.markdown("### 2. Configure Experiment Schema")
     all_cols = list(df.columns)
-    
+
     col_m1, col_m2, col_m3, col_m4 = st.columns(4)
     with col_m1:
         user_col = st.selectbox("User ID Column:", all_cols, index=all_cols.index("user_id") if "user_id" in all_cols else 0)
     with col_m2:
         variant_col = st.selectbox("Variant Column:", all_cols, index=all_cols.index("variant") if "variant" in all_cols else 1)
-    
+
     observed_variants = list(df[variant_col].dropna().unique())
     with col_m3:
         control_var = st.selectbox("Control Variant Label:", observed_variants, index=0 if len(observed_variants) > 0 else 0)
@@ -118,7 +118,7 @@ if df is not None:
             "Primary Metric Kind:",
             ("continuous_mean", "binary_mean", "ratio_of_sums"),
         )
-    
+
     metric_kind = MetricKind(metric_kind_str)
     num_col, denom_col, outcome_col, pre_col = None, None, None, None
 

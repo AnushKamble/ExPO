@@ -21,7 +21,7 @@ from expo_engine.statistics.welch import compute_welch_ttest
 
 def benchmark_scale(n_rows: int, seed: int = 42) -> Dict[str, Any]:
     print(f"\n--- Benchmarking Scale: {n_rows:,} rows ---")
-    
+
     # 1. Synthetic Data Generation
     t0 = time.perf_counter()
     df, meta = generate_effect_normal(n_users=n_rows, seed=seed, delta=1.5, rho=0.7)

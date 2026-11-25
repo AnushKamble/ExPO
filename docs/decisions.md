@@ -12,7 +12,7 @@
 
 ## ADR-003: CUPED & ANCOVA Variance Reduction
 - **Context:** Pre-experiment covariates correlate with post-treatment outcomes and can reduce estimation variance without altering the causal estimand under random assignment.
-- **Decision:** 
+- **Decision:**
   1. Primary adjusted inference uses linear ANCOVA regression ($Y_i = \beta_0 + \tau T_i + \beta_1 X_i + \epsilon_i$) with heteroscedasticity-robust standard errors (HC1/HC2).
   2. Implement standard CUPED transformation $Y_i^{adj} = Y_i - \hat{\theta}(X_i - \bar{X})$ where $\hat{\theta} = \operatorname{\widehat{Cov}}(Y, X) / \operatorname{\widehat{Var}}(X)$ as an explicit cross-check.
   3. Predeclared missing covariate policy: report missingness rates by arm. Compute unadjusted estimate on all valid outcomes and adjusted estimate on complete cases. Disallow silent imputation.

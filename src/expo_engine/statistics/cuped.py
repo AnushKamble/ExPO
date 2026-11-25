@@ -32,10 +32,10 @@ def compute_cuped(
     # 1. Unadjusted analysis on all valid outcome records
     valid_outcome_mask = np.isfinite(df[metric_col])
     all_valid_df = df[valid_outcome_mask]
-    
+
     y_c_all = all_valid_df.loc[all_valid_df[variant_col] == control_variant, metric_col].values
     y_t_all = all_valid_df.loc[all_valid_df[variant_col] == treatment_variant, metric_col].values
-    
+
     unadjusted_welch = compute_welch_ttest(
         y_c_all, y_t_all, metric_name=metric_col, alpha=alpha, run_mann_whitney=True
     )
@@ -44,10 +44,10 @@ def compute_cuped(
     # 2. Complete cases filtering for covariate adjustment
     complete_mask = valid_outcome_mask & np.isfinite(df[pre_covariate_col])
     complete_df = df[complete_mask].copy()
-    
+
     n_complete = len(complete_df)
     n_missing_cov = unadjusted_count - n_complete
-    
+
     if n_missing_cov > 0:
         pct_miss = (n_missing_cov / unadjusted_count) * 100
         warnings.append(
@@ -91,7 +91,7 @@ def compute_cuped(
     # 3. Compute optimal theta and sample correlation
     cov_yx = float(np.cov(y, x, ddof=1)[0, 1])
     theta = cov_yx / x_var
-    
+
     y_var = float(np.var(y, ddof=1))
     rho = cov_yx / np.sqrt(x_var * y_var) if y_var > 1e-12 else 0.0
     theoretical_reduction = float(rho ** 2)
@@ -99,7 +99,7 @@ def compute_cuped(
     # 4. CUPED transform: Y_adj = Y - theta * (X - mean(X))
     x_mean = float(np.mean(x))
     y_adj = y - theta * (x - x_mean)
-    
+
     complete_df["y_adj"] = y_adj
     y_adj_c = complete_df.loc[complete_df[variant_col] == control_variant, "y_adj"].values
     y_adj_t = complete_df.loc[complete_df[variant_col] == treatment_variant, "y_adj"].values
@@ -117,7 +117,7 @@ def compute_cuped(
     X_reg = np.column_stack([np.ones(n_complete), is_treatment, x - x_mean])
     ols_model = sm.OLS(y, X_reg)
     ols_res = ols_model.fit(cov_type="HC1")  # heteroscedasticity-robust SE
-    
+
     ancova_ate = float(ols_res.params[1])
     ancova_robust_se = float(ols_res.bse[1])
     ancova_p_value = float(ols_res.pvalues[1])

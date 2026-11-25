@@ -146,7 +146,7 @@ def validate_experiment_data(
                     missing_rates[pre_col] = float(pre_missing)
                     if pre_missing > 0.50:
                         warnings.append(f"High missingness in pre-covariate '{pre_col}': {pre_missing:.1%}.")
-                    
+
                     # Differential missingness check across arms
                     if pre_missing > 0 and len(observed_variants) == 2:
                         contingency = pd.crosstab(df[config.variant_col], df[pre_col].isna())

@@ -67,7 +67,7 @@ def check_srm(
         method = "chi_square"
         o = np.array([obs_counts[v] for v in variants], dtype=float)
         e = np.array([exp_counts[v] for v in variants], dtype=float)
-        
+
         # Pearson chi-square statistic: sum((O - E)^2 / E)
         chi2_stat = float(np.sum((o - e) ** 2 / e))
         p_val = float(1.0 - stats.chi2.cdf(chi2_stat, df=df_stat))

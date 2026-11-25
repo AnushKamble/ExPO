@@ -46,10 +46,10 @@ def apply_benjamini_hochberg(
     # p_adj(k) = min_{j >= k} (m / j * p(j))
     raw_p_sorted = np.array([item[2] for item in sorted_pvals])
     ranks = np.arange(1, m + 1)
-    
+
     # Unmonotonized values: (m / rank) * p
     unmonotonized = raw_p_sorted * (m / ranks)
-    
+
     # Monotonize in reverse order: p_adj(k) = min(p_adj(k+1), unmonotonized(k))
     adj_p_sorted = np.zeros(m)
     current_min = 1.0

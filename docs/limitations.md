@@ -19,7 +19,7 @@ ExPO maintains statistical honesty by explicitly disclosing where asymptotic app
 
 ## 3. CUPED / Covariate Adjustment
 - **Assumption:** Pre-experiment covariates $X_i$ must be measured strictly *before* assignment/exposure and cannot be affected by the treatment.
-- **Limitation:** 
+- **Limitation:**
   - CUPED variance reduction is not guaranteed to achieve arbitrary percentages (e.g. 50%); realized reduction depends strictly on the empirical correlation $\rho$ according to $1 - \rho^2$.
   - Post-treatment covariates must never be used for CUPED; doing so causes collider bias and severe estimation error.
   - Complete-case adjustment assumes covariate missingness is completely at random (MCAR). Imbalanced missingness triggers differential missingness warnings.
@@ -35,7 +35,7 @@ ExPO maintains statistical honesty by explicitly disclosing where asymptotic app
 ---
 
 ## 5. Sequential Monitoring (mSPRT Evidence Process)
-- **Assumption:** 
+- **Assumption:**
   1. Increments $D_i = Y_{T,i} - Y_{C,i}$ are independent and Gaussian.
   2. The difference variance $\sigma_D^2$ is **fixed before experiment launch** from historical or pilot data.
   3. Predeclared mixture prior $\tau^2 > 0$ and stopping threshold $1/\alpha$.

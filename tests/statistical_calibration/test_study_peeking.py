@@ -6,7 +6,7 @@ from expo_engine.simulation.runners import run_peeking_simulation
 def test_peeking_simulation_smoke():
     # Smoke run of Study A under null (delta=0)
     res_null = run_peeking_simulation(preset="smoke", seed=42, delta_true=0.0, alpha=0.05)
-    
+
     # 1. Fixed horizon Welch Type I error should be roughly ~0.05
     fixed_rate = res_null["fixed_horizon"]["rejection_rate"]
     assert 0.01 <= fixed_rate <= 0.10

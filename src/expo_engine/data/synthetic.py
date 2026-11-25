@@ -24,27 +24,27 @@ def generate_null_normal(
     and a correlated pre-treatment covariate X for CUPED evaluation.
     """
     rng = np.random.default_rng(seed)
-    
+
     # Generate pre-treatment covariate X
     x = rng.normal(loc=mu_x, scale=sigma_x, size=n_users)
-    
+
     # Generate potential outcome Y(0) correlated with X
     z = rng.normal(loc=0.0, scale=1.0, size=n_users)
     y0 = mu_y + rho * (sigma_y / sigma_x) * (x - mu_x) + np.sqrt(max(0.0, 1.0 - rho**2)) * sigma_y * z
-    
+
     # Assignment: 50/50 balanced
     variants = rng.choice(["control", "treatment"], size=n_users, p=[0.5, 0.5])
-    
+
     # True treatment effect is exactly 0
     delta_true = 0.0
     y = y0.copy()
-    
+
     # Apply missingness to pre-covariate if requested
     pre_covariate = x.copy()
     if missing_covariate_rate > 0:
         mask = rng.random(size=n_users) < missing_covariate_rate
         pre_covariate = np.where(mask, np.nan, pre_covariate)
-        
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
@@ -52,7 +52,7 @@ def generate_null_normal(
         "metric_value": y,
         "pre_metric": pre_covariate,
     })
-    
+
     metadata = {
         "scenario": "null_normal",
         "n_users": n_users,
@@ -83,23 +83,23 @@ def generate_effect_normal(
     Generates a Gaussian A/B test with a known additive treatment effect delta > 0.
     """
     rng = np.random.default_rng(seed)
-    
+
     x = rng.normal(loc=mu_x, scale=sigma_x, size=n_users)
     z = rng.normal(loc=0.0, scale=1.0, size=n_users)
     y0 = mu_y + rho * (sigma_y / sigma_x) * (x - mu_x) + np.sqrt(max(0.0, 1.0 - rho**2)) * sigma_y * z
-    
+
     variants = rng.choice(["control", "treatment"], size=n_users, p=[0.5, 0.5])
-    
+
     # Additive treatment effect on treatment arm
     treatment_mask = (variants == "treatment")
     y = y0.copy()
     y[treatment_mask] += delta
-    
+
     pre_covariate = x.copy()
     if missing_covariate_rate > 0:
         mask = rng.random(size=n_users) < missing_covariate_rate
         pre_covariate = np.where(mask, np.nan, pre_covariate)
-        
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
@@ -107,7 +107,7 @@ def generate_effect_normal(
         "metric_value": y,
         "pre_metric": pre_covariate,
     })
-    
+
     metadata = {
         "scenario": "effect_normal",
         "n_users": n_users,
@@ -137,14 +137,14 @@ def generate_null_heavy_tailed(
     # Student's t random variable
     t_vals = rng.standard_t(df=df_student, size=n_users) * scale + 50.0
     variants = rng.choice(["control", "treatment"], size=n_users, p=[0.5, 0.5])
-    
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
         "variant": variants,
         "metric_value": t_vals,
     })
-    
+
     metadata = {
         "scenario": "null_heavy_tailed",
         "n_users": n_users,
@@ -168,20 +168,20 @@ def generate_conversion(
     """
     rng = np.random.default_rng(seed)
     variants = rng.choice(["control", "treatment"], size=n_users, p=[0.5, 0.5])
-    
+
     p_treatment = p_control + delta
     is_treatment = (variants == "treatment")
-    
+
     probs = np.where(is_treatment, p_treatment, p_control)
     conversions = (rng.random(size=n_users) < probs).astype(int)
-    
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
         "variant": variants,
         "conversion": conversions,
     })
-    
+
     metadata = {
         "scenario": "conversion",
         "n_users": n_users,
@@ -208,15 +208,15 @@ def generate_ratio_metric(
     """
     rng = np.random.default_rng(seed)
     variants = rng.choice(["control", "treatment"], size=n_users, p=[0.5, 0.5])
-    
+
     # Denominator: user impressions / visits (Poisson + 1)
     denominator = rng.poisson(lam=lambda_denom, size=n_users) + 1
-    
+
     # Numerator: user clicks conditional on visits
     prob_t = click_prob_control + delta_click_prob
     probs = np.where(variants == "treatment", prob_t, click_prob_control)
     numerator = rng.binomial(n=denominator, p=probs)
-    
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
@@ -224,7 +224,7 @@ def generate_ratio_metric(
         "numerator": numerator,
         "denominator": denominator,
     })
-    
+
     metadata = {
         "scenario": "ratio_metric",
         "n_users": n_users,
@@ -251,17 +251,17 @@ def generate_srm_injected(
     rng = np.random.default_rng(seed)
     is_treatment = rng.random(size=n_users) < realized_treatment_prob
     variants = np.where(is_treatment, "treatment", "control")
-    
+
     # Metrics
     y = rng.normal(loc=100.0, scale=15.0, size=n_users)
-    
+
     df = pd.DataFrame({
         "experiment_id": experiment_id,
         "user_id": [f"u_{i:06d}" for i in range(n_users)],
         "variant": variants,
         "metric_value": y,
     })
-    
+
     metadata = {
         "scenario": "srm_injected",
         "n_users": n_users,

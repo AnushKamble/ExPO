@@ -42,7 +42,7 @@ def run_peeking_simulation(
         raise ValueError(f"Unknown preset: '{preset}'. Choose 'smoke', 'medium', or 'full'.")
 
     rng = np.random.default_rng(seed)
-    
+
     # Generate incremental look sums: shape (n_reps, n_looks)
     # Each look has n_pairs_per_look increments ~ N(delta_true, sigma_d^2)
     # Sum of n_pairs increments ~ N(n_pairs * delta_true, n_pairs * sigma_d^2)
@@ -52,7 +52,7 @@ def run_peeking_simulation(
         size=(n_reps, n_looks),
     )
     cum_sums = np.cumsum(look_sums, axis=1)
-    
+
     # Look indices and sample sizes
     pairs_at_look = np.arange(1, n_looks + 1) * n_pairs_per_look  # shape (n_looks,)
     cum_means = cum_sums / pairs_at_look[np.newaxis, :]  # shape (n_reps, n_looks)
@@ -187,13 +187,13 @@ def run_cuped_simulation(
             z = rng.normal(0.0, 1.0, n_users_per_rep)
             sigma_y = 10.0
             y0 = 50.0 + rho * (x - 50.0) + np.sqrt(max(0.0, 1.0 - rho**2)) * sigma_y * z
-            
+
             is_treatment = rng.random(n_users_per_rep) < 0.5
             y = y0 + is_treatment * delta_true
 
             # Variance raw
             var_raw = float(np.var(y, ddof=1))
-            
+
             # CUPED theta
             x_var = float(np.var(x, ddof=1))
             theta = float(np.cov(y, x, ddof=1)[0, 1]) / x_var if x_var > 0 else 0.0
@@ -279,7 +279,7 @@ def run_aa_simulation(
     y_t = rng.normal(50.0, 10.0, size=(n_reps, n_users_per_rep // 2))
 
     t_stats, p_values = stats.ttest_ind(y_t, y_c, axis=1, equal_var=False)
-    
+
     rejections = int(np.sum(p_values < alpha))
     fpr, fpr_l, fpr_u = compute_wilson_score_interval(rejections, n_reps)
 
@@ -325,7 +325,7 @@ def run_ratio_simulation(
     else:
         n_reps = 1000
     rng = np.random.default_rng(seed)
-    
+
     true_ratio_diff = 0.02
     p_c = 0.05
     p_t = p_c + true_ratio_diff
@@ -399,7 +399,7 @@ def run_srm_simulation(
             k_obs = rng.binomial(n=n, p=p, size=n_reps)
             exp_k = n * 0.50
             o_c = n - k_obs
-            
+
             # Chi-square stat: (k - E)^2 / E + (o_c - E)^2 / E
             chi2_stats = ((k_obs - exp_k) ** 2) / exp_k + ((o_c - exp_k) ** 2) / exp_k
             p_vals = 1.0 - stats.chi2.cdf(chi2_stats, df=1)

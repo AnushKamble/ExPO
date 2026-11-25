@@ -19,13 +19,13 @@ def test_hash_assignment_bounds_and_determinism():
 def test_assignment_row_order_invariance():
     users = [f"user_{i}" for i in range(100)]
     df1 = pd.DataFrame({"user_id": users, "value": np.arange(100)})
-    
+
     # Shuffle dataframe rows
     df2 = df1.sample(frac=1.0, random_state=123).reset_index(drop=True)
-    
+
     assigned1 = assign_dataframe(df1, user_id_col="user_id", experiment_id="exp_test")
     assigned2 = assign_dataframe(df2, user_id_col="user_id", experiment_id="exp_test")
-    
+
     # Merge on user_id to verify every user receives identical variant
     merged = pd.merge(assigned1, assigned2, on="user_id", suffixes=("_1", "_2"))
     assert (merged["variant_1"] == merged["variant_2"]).all()

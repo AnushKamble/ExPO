@@ -14,12 +14,12 @@ def test_bh_comparison_with_statsmodels():
         ("m6", 0.850),
     ]
     raw_pvals = [p for _, p in hypotheses]
-    
+
     res = apply_benjamini_hochberg(hypotheses, fdr_q=0.05)
-    
+
     # Reference statsmodels
     sm_rejected, sm_adj_p, _, _ = multipletests(raw_pvals, alpha=0.05, method="fdr_bh")
-    
+
     # Verify order is preserved and adjusted values match
     for i, hyp in enumerate(res.hypotheses):
         assert hyp.metric_name == hypotheses[i][0]
@@ -34,7 +34,7 @@ def test_bh_monotonicity_and_ties():
     # Tied p-values
     hypotheses = [("a", 0.02), ("b", 0.02), ("c", 0.05), ("d", 0.05)]
     res = apply_benjamini_hochberg(hypotheses, fdr_q=0.05)
-    
+
     adj_pvals = [h.adjusted_p_value for h in res.hypotheses]
     # Tied raw values must yield identical adjusted values
     assert adj_pvals[0] == adj_pvals[1]

@@ -1,8 +1,8 @@
 # ExPO — Independent Adversarial Quality & Statistical Audit
 
-**Audit Date:** 2026-10-23  
-**Auditor:** ExPO Autonomous Senior Data Science, Statistician & Staff QA Reviewer  
-**Audit Scope:** Full codebase, mathematical contracts, statistical algorithms, data contracts, simulation suites, CLI, UI, and test suite.  
+**Audit Date:** 2026-10-23
+**Auditor:** ExPO Autonomous Senior Data Science, Statistician & Staff QA Reviewer
+**Audit Scope:** Full codebase, mathematical contracts, statistical algorithms, data contracts, simulation suites, CLI, UI, and test suite.
 **Audit Outcome:** **PASS (Zero Critical, High, or Medium Findings Unresolved)**
 
 ---

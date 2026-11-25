@@ -30,7 +30,7 @@ def test_effect_normal_ground_truth():
     delta_target = 2.5
     df, meta = generate_effect_normal(n_users=10000, seed=42, delta=delta_target, mu_y=100.0)
     assert meta["true_ate"] == delta_target
-    
+
     # Check empirical mean difference is close to true delta
     means = df.groupby("variant")["metric_value"].mean()
     empirical_diff = means["treatment"] - means["control"]

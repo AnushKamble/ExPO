@@ -42,7 +42,7 @@ def assign_variant(
     total_weight = sum(weights)
     if total_weight <= 0:
         raise ValueError("Sum of weights must be positive")
-    
+
     norm_weights = [w / total_weight for w in weights]
     cum_weights = np.cumsum(norm_weights)
 

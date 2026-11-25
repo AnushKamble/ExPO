@@ -73,7 +73,7 @@ def compute_welch_ttest(
 
     # ATE
     delta = t_summary.mean - c_summary.mean
-    
+
     # Relative lift semantics
     warnings: List[str] = []
     if abs(c_summary.mean) < 1e-7:

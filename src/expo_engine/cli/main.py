@@ -74,7 +74,7 @@ def demo(
         missing_covariate_rate=0.03,
     )
     df["page_views"] = df["metric_value"] * 0.4 + 5.0
-    
+
     data_file = out_path / "synthetic_users.parquet"
     df.to_parquet(data_file, index=False)
     typer.secho(f"      Saved raw synthetic data to {data_file}", fg=typer.colors.GREEN)
@@ -104,7 +104,7 @@ def demo(
     # 5. Display key findings
     typer.echo("[4/4] Analysis complete! Results Summary:")
     typer.secho("--------------------------------------------------", fg=typer.colors.WHITE)
-    
+
     # Primary Welch
     w = manifest.primary_metric_result
     typer.echo(f"  Primary Metric (Unadjusted): {w['metric_name']}")

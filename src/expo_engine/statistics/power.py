@@ -143,7 +143,7 @@ def compute_binary_sample_size(
     term1 = z_alpha * np.sqrt(2.0 * p_bar * (1.0 - p_bar))
     term2 = z_beta * np.sqrt(p0 * (1.0 - p0) + p1 * (1.0 - p1))
     n_per_arm_raw = ((term1 + term2) ** 2) / (mde_absolute ** 2)
-    
+
     # Adjust for allocation ratio if unequal
     if allocation_ratio == 1.0:
         n_c = int(np.ceil(n_per_arm_raw))

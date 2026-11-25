@@ -98,7 +98,7 @@ def export_report_markdown(manifest: ExperimentReportManifest, out_path: Path) -
     Exports a comprehensive GitHub-flavored Markdown report.
     """
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     md_lines = [
         f"# ExPO Experiment Analysis Report: `{manifest.experiment_id}`",
         f"- **Run ID:** `{manifest.run_id}`",
@@ -217,7 +217,7 @@ def export_report_html(manifest: ExperimentReportManifest, out_path: Path) -> Pa
     Exports a self-contained, beautifully styled HTML report.
     """
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Generate HTML content
     md_path = out_path.with_suffix(".tmp.md")
     export_report_markdown(manifest, md_path)

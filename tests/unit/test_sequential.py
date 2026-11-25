@@ -15,7 +15,7 @@ def test_sequential_known_answer_log_evidence():
     # term2 = (50^2 * 1.0 * 0.4^2) / (2 * 4.0 * 54.0) = (2500 * 0.16) / 432.0 = 400.0 / 432.0 = 0.9259259
     # total = -1.301548 + 0.9259259 = -0.375622
     expected = 0.5 * np.log(4.0 / 54.0) + (400.0 / 432.0)
-    
+
     val = compute_log_mixture_evidence(
         cumulative_mean_diff=0.4,
         n_pairs=50,

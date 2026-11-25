@@ -162,7 +162,7 @@ if manifest.secondary_multiplicity and manifest.secondary_multiplicity.hypothese
     st.markdown("---")
     st.subheader("2. Secondary & Guardrail Hypotheses (Benjamini-Hochberg FDR Control)")
     st.caption(f"Controlled at False Discovery Rate q = {manifest.secondary_multiplicity.fdr_q:.2f} across declared fixed-horizon family.")
-    
+
     sec_rows = []
     for hyp in manifest.secondary_multiplicity.hypotheses:
         sec_rows.append({
